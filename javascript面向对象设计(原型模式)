@@ -1,0 +1,37 @@
+1.每个函数在生成的时候都会自动的创建一个属性：prototype（每个函数都有，并不是构造函数特有）
+2.prototype属性是一个指针。指向的是一个对象，该对象包含了特定类型的所有的属性和方法。通俗来说这个对象就是通过调用构造函数而创建
+的那个实例对象的原型对象。如下：
+function Person(){
+}
+Person.prototype.name="cj";
+Person.prototype.age="10";
+Person.prototype.say=function(){
+  console.log(this.name);
+}
+var person1 = new Person();
+var person2 = new Person();
+person1.say()   // cj
+其中person1就是该构造函数(Person)的实例对象。而Person.prototype指向的就是person1的原型对象。里面存放了所有实例对象都能访问的属性和方法。
+
+3.constructor属性 是所有的原型对象(Person.prototype)在创建时都会生成的一个(构造函数)属性。该属性一个指向prototype属性所在函数的指针
+用前面的例子来说，Person.prototype.constructor指向的就是Person。并且实例对象也能访问constructor属性。因为该属性如同其他属性方法
+一样，都是共享的。
+4.实例对象在创建后,内部会包含一个指针(__proto__),指向构造函数的原型对象。例如
+console.loe(person1.__proto__===Person.prototype)  //true
+但是这个指针只在FireFox，Chrome，Safari等浏览器中有效。在IE中则没有给指针。
+5.每个由同一个构造函数实例化的 实例化对象所访问的属性和方法都是同一个(除非重新覆盖)
+6.可以用isPrototypeOf()方法判断对象之间是否存在关系。例如
+console.log(Person.prototype.isPrototypeOf(person1))  //true
+console.log(Person.isPrototypeOf(person1))  //false
+因为person1内部有一个指向Person.prototype的指针(person1.__prop__??还不确定),因此返回true。
+7.可以用Object的getPrototypeOf(obj)返回该obj的原型例如。
+console.log(Object.getPrototypeOf(person1)==Person.prototype)  //true
+
+8.删除或修改一个实例对象的属性或方法的时候,只会在该实例对象上修改,不会修改构造函数上的属性和方法。例如
+person1.name = "fqy";
+console.log(person1.name)  //fqy;
+console.log(person2.name)  //cj;
+
+并且在删除该实例对象的属性之后,会重新向上链接 找到原型中的属性
+delete person1.name;
+console.log(person1.name)  //cj;
